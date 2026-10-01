@@ -19,198 +19,405 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       background-color: #08030d;
       background-image: 
-        radial-gradient(ellipse at top, rgba(234, 88, 12, 0.18) 0%, transparent 60%),
-        radial-gradient(circle at bottom, rgba(147, 51, 234, 0.15) 0%, transparent 55%);
+        radial-gradient(ellipse at 50% 0%, rgba(234, 88, 12, 0.15) 0%, transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(147, 51, 234, 0.12) 0%, transparent 50%);
       color: #f3f4f6;
       min-height: 100vh;
     }
     .spooky-font {
       font-family: 'Creepster', cursive;
-      letter-spacing: 2.5px;
+      letter-spacing: 2px;
     }
-    .halloween-glow {
-      box-shadow: 0 0 35px -5px rgba(234, 88, 12, 0.25), 0 0 15px -3px rgba(168, 85, 247, 0.2);
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(234, 88, 12, 0.3);
+      border-radius: 4px;
     }
   </style>
 </head>
-<body class="pb-20 antialiased selection:bg-orange-600 selection:text-white">
+<body class="pb-24 antialiased selection:bg-orange-600 selection:text-white">
 
   <!-- Sticky Header -->
-  <header class="sticky top-0 z-40 bg-[#08030d]/95 backdrop-blur-md border-b border-orange-900/50 px-4 py-3 shadow-lg shadow-black/40">
+  <header class="sticky top-0 z-40 bg-[#08030d]/95 backdrop-blur-md border-b border-orange-950/80 px-4 py-3 shadow-xl">
     <div class="max-w-xl mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-2.5">
-        <span class="text-3xl filter drop-shadow">🎃</span>
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-xl shadow-lg shadow-orange-600/30">
+          🎃
+        </div>
         <div>
-          <h1 class="spooky-font text-2xl text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-amber-400 to-orange-500 tracking-wider">
-            CHILLI CON 2026
+          <h1 class="spooky-font text-2xl text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 leading-tight">
+            CHILLI CON 2026 🌶️
           </h1>
-          <p class="text-[11px] text-orange-300/80 font-bold uppercase tracking-wider">Family Potluck & Chili Cook-off</p>
+          <p class="text-[11px] text-green-400 font-semibold flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Live Cloud Synced
+          </p>
         </div>
       </div>
-      <button id="shareBtn" class="flex items-center gap-1.5 bg-orange-600/30 hover:bg-orange-600 text-orange-200 hover:text-white px-3.5 py-1.5 rounded-full border border-orange-500/40 text-xs font-bold transition shadow-sm active:scale-95">
-        <span>🔗</span> Share
+      <button id="shareBtn" class="flex items-center gap-1.5 bg-orange-600 hover:bg-orange-500 text-white px-3.5 py-1.5 rounded-xl font-bold text-xs shadow-md shadow-orange-600/30 active:scale-95 transition">
+        <span>🎃</span> Share
+      </button>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="max-w-xl mx-auto grid grid-cols-3 gap-1.5 mt-3 bg-stone-950/80 p-1 rounded-2xl border border-stone-800">
+      <button id="tabBtnForm" class="nav-tab active py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-orange-600 text-white shadow">
+        <span>📝</span> RSVP Form
+      </button>
+      <button id="tabBtnPotluck" class="nav-tab py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-stone-400 hover:text-white">
+        <span>🍲</span> Potluck <span id="badgePotluckCount" class="bg-stone-800 text-orange-400 text-[10px] px-1.5 py-0.2 rounded-full">0</span>
+      </button>
+      <button id="tabBtnStats" class="nav-tab py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-stone-400 hover:text-white">
+        <span>📊</span> Party Stats
       </button>
     </div>
   </header>
 
-  <main class="max-w-xl mx-auto px-4 pt-5 space-y-6">
+  <main class="max-w-xl mx-auto px-4 pt-4 space-y-5">
 
-    <!-- Live Headcount & Stats Cards -->
-    <div class="grid grid-cols-4 gap-2">
-      <div class="bg-stone-900/90 border border-orange-500/30 rounded-2xl p-2.5 text-center shadow">
-        <div class="text-xl font-extrabold text-orange-400" id="statHeadcount">0</div>
-        <div class="text-[9px] font-bold text-stone-400 uppercase tracking-wider">Headcount</div>
-      </div>
-      <div class="bg-stone-900/90 border border-orange-500/30 rounded-2xl p-2.5 text-center shadow">
-        <div class="text-xl font-extrabold text-amber-400" id="statChiliCount">0</div>
-        <div class="text-[9px] font-bold text-stone-400 uppercase tracking-wider">Chilis</div>
-      </div>
-      <div class="bg-stone-900/90 border border-orange-500/30 rounded-2xl p-2.5 text-center shadow">
-        <div class="text-xl font-extrabold text-green-400" id="statSatYes">0</div>
-        <div class="text-[9px] font-bold text-stone-400 uppercase tracking-wider">Sat 17th 👍</div>
-      </div>
-      <div class="bg-stone-900/90 border border-orange-500/30 rounded-2xl p-2.5 text-center shadow">
-        <div class="text-xl font-extrabold text-purple-400" id="statCarvingYes">0</div>
-        <div class="text-[9px] font-bold text-stone-400 uppercase tracking-wider">Carvers 🎃</div>
-      </div>
-    </div>
+    <!-- ================= VIEW 1: RSVP FORM ================= -->
+    <section id="viewForm" class="space-y-5">
 
-    <!-- Duplicate Prevention Claim Board -->
-    <div class="bg-stone-900/90 border border-orange-500/30 rounded-2xl p-4 shadow-xl">
-      <div class="flex items-center justify-between mb-1">
-        <h2 class="text-xs font-extrabold text-orange-400 uppercase tracking-wider flex items-center gap-1.5">
-          <span>🍲</span> What Everyone is Bringing
-        </h2>
-        <span class="text-[11px] font-bold text-stone-400" id="dishCountLabel">0 items claimed</span>
-      </div>
-      <p class="text-[11px] text-stone-400 mb-3">Check this list first so we don't double up on dishes!</p>
-      
-      <div id="dishList" class="space-y-2 max-h-48 overflow-y-auto pr-1">
-        <div class="text-xs text-stone-500 italic py-2 text-center">No dishes claimed yet. Be the first!</div>
-      </div>
-    </div>
+      <!-- Hero Banner -->
+      <div class="bg-gradient-to-br from-purple-950/60 via-stone-900/90 to-orange-950/50 border border-purple-500/30 rounded-3xl p-5 shadow-2xl relative overflow-hidden">
+        <div class="inline-flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/30 px-3 py-1 rounded-full text-orange-300 text-[11px] font-bold mb-2">
+          🔥 Annual Family Halloween Cook-Off
+        </div>
+        <h2 class="text-xl font-black text-white mb-1.5">Family Get-Together Questionnaire</h2>
+        <p class="text-xs text-stone-300 leading-relaxed mb-4">
+          Sign up with what you're bringing so we don't end up with 10 pots of chili and zero bowls! Everything updates live for all family members.
+        </p>
 
-    <!-- RSVP Questionnaire Form -->
-    <div class="bg-stone-900/95 border border-orange-500/40 rounded-3xl p-5 sm:p-6 halloween-glow relative">
-      <div id="editBanner" class="hidden mb-4 p-2.5 bg-purple-950/80 border border-purple-500/50 rounded-xl flex items-center justify-between text-xs text-purple-200">
-        <span class="font-semibold">✏️ Editing RSVP</span>
-        <button id="cancelEditBtn" type="button" class="font-bold underline text-purple-300 hover:text-white">Cancel</button>
+        <!-- Mini Stats Row -->
+        <div class="grid grid-cols-3 gap-2 pt-2 border-t border-stone-800/80">
+          <div class="bg-stone-950/60 rounded-xl p-2 text-center">
+            <div class="text-[9px] font-bold text-stone-400 uppercase">Total Guests</div>
+            <div class="text-lg font-black text-orange-400" id="heroTotalGuests">0</div>
+          </div>
+          <div class="bg-stone-950/60 rounded-xl p-2 text-center">
+            <div class="text-[9px] font-bold text-stone-400 uppercase">Dishes Claimed</div>
+            <div class="text-lg font-black text-amber-400" id="heroDishesClaimed">0</div>
+          </div>
+          <div class="bg-stone-950/60 rounded-xl p-2 text-center">
+            <div class="text-[9px] font-bold text-stone-400 uppercase">Sat 17th Yes</div>
+            <div class="text-lg font-black text-green-400" id="heroSatPercent">0%</div>
+          </div>
+        </div>
       </div>
 
-      <form id="rsvpForm" class="space-y-5">
+      <!-- Edit Notice -->
+      <div id="editBanner" class="hidden p-3 bg-purple-950/90 border border-purple-500/60 rounded-2xl flex items-center justify-between text-xs text-purple-200">
+        <span class="font-bold flex items-center gap-1.5"><span>✏️</span> Editing existing RSVP</span>
+        <button id="cancelEditBtn" type="button" class="bg-purple-900/60 hover:bg-purple-800 text-white font-bold px-3 py-1 rounded-lg">Cancel</button>
+      </div>
+
+      <!-- Questionnaire Container -->
+      <form id="rsvpForm" class="space-y-4">
         <input type="hidden" id="entryId" value="" />
 
-        <!-- 1. Name -->
-        <div>
-          <label class="block text-xs font-bold text-orange-300 uppercase tracking-wider mb-1.5">
-            1. Your Name / Family Branch *
-          </label>
+        <!-- Question 1: Name -->
+        <div class="bg-stone-900/80 border border-stone-800 rounded-3xl p-4 sm:p-5 space-y-2">
+          <div class="flex items-center gap-1.5 text-orange-400 text-xs font-bold uppercase tracking-wider">
+            <span>👤</span> Question 1
+          </div>
+          <label class="block text-sm font-bold text-white">Your Name / Family Branch *</label>
           <input type="text" id="userName" required placeholder="e.g. Tim & Monica" 
-                 class="w-full bg-stone-950/90 border border-stone-700 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 rounded-xl px-4 py-2.5 text-sm text-white placeholder-stone-600 outline-none transition" />
+                 class="w-full bg-stone-950 border border-stone-800 focus:border-orange-500 rounded-2xl px-4 py-3 text-sm text-white placeholder-stone-600 outline-none transition" />
         </div>
 
-        <!-- 2. Household Attendance -->
-        <div>
-          <label class="block text-xs font-bold text-orange-300 uppercase tracking-wider mb-1.5">
-            2. Number of people attending from your household? *
-          </label>
-          <div class="flex items-center gap-3">
-            <button type="button" id="decHeadcount" class="w-11 h-11 rounded-xl bg-stone-800 text-stone-200 hover:bg-stone-700 text-xl font-bold flex items-center justify-center select-none active:scale-95 transition">-</button>
-            <input type="number" id="headcount" value="1" min="1" max="20" readonly 
-                   class="w-16 bg-stone-950 border border-stone-700 rounded-xl text-center py-2.5 text-base font-extrabold text-orange-400" />
-            <button type="button" id="incHeadcount" class="w-11 h-11 rounded-xl bg-stone-800 text-stone-200 hover:bg-stone-700 text-xl font-bold flex items-center justify-center select-none active:scale-95 transition">+</button>
-            <span class="text-xs text-stone-400 font-medium">attendees</span>
+        <!-- Question 2: Headcount Stepper -->
+        <div class="bg-stone-900/80 border border-stone-800 rounded-3xl p-4 sm:p-5 space-y-2">
+          <div class="flex items-center gap-1.5 text-orange-400 text-xs font-bold uppercase tracking-wider">
+            <span>👥</span> Question 2
+          </div>
+          <label class="block text-sm font-bold text-white">Number of people attending from your household? *</label>
+          <div class="flex items-center gap-3 pt-1">
+            <button type="button" id="decHeadcount" class="w-12 h-12 rounded-2xl bg-stone-950 border border-stone-800 text-xl font-black text-stone-200 active:scale-95 transition flex items-center justify-center">-</button>
+            <input type="number" id="headcount" value="1" min="1" max="25" readonly 
+                   class="w-20 bg-stone-950 border border-stone-800 rounded-2xl text-center py-3 text-lg font-black text-orange-400" />
+            <button type="button" id="incHeadcount" class="w-12 h-12 rounded-2xl bg-stone-950 border border-stone-800 text-xl font-black text-stone-200 active:scale-95 transition flex items-center justify-center">+</button>
+            <span class="text-xs text-stone-400 font-medium">people (including you)</span>
           </div>
         </div>
 
-        <!-- 3. Saturday the 17th -->
-        <div>
-          <label class="block text-xs font-bold text-orange-300 uppercase tracking-wider mb-1.5">
-            3. Does Saturday the 17th work for you? *
-          </label>
-          <div class="grid grid-cols-2 gap-3">
-            <label class="flex items-center justify-center gap-2 p-3 bg-stone-950 border border-stone-800 rounded-xl cursor-pointer hover:border-orange-500 has-[:checked]:border-orange-500 has-[:checked]:bg-orange-500/10 transition">
-              <input type="radio" name="dateVote" value="Yes" class="accent-orange-500" required checked />
-              <span class="text-xs sm:text-sm font-semibold">👍 Yes, works!</span>
-            </label>
-            <label class="flex items-center justify-center gap-2 p-3 bg-stone-950 border border-stone-800 rounded-xl cursor-pointer hover:border-orange-500 has-[:checked]:border-orange-500 has-[:checked]:bg-orange-500/10 transition">
-              <input type="radio" name="dateVote" value="No" class="accent-orange-500" />
-              <span class="text-xs sm:text-sm font-semibold">👎 Can't make it</span>
-            </label>
+        <!-- Question 3: Date Availability (Tappable Pumpkin / Ghost Cards) -->
+        <div class="bg-stone-900/80 border border-stone-800 rounded-3xl p-4 sm:p-5 space-y-2.5">
+          <div class="flex items-center gap-1.5 text-orange-400 text-xs font-bold uppercase tracking-wider">
+            <span>📅</span> Question 3
+          </div>
+          <label class="block text-sm font-bold text-white">Does Saturday the 17th work for you? *</label>
+          <div class="grid grid-cols-2 gap-3 pt-1">
+            <div id="cardDateYes" class="date-card active cursor-pointer p-4 rounded-2xl border-2 border-orange-500 bg-orange-500/10 text-center transition active:scale-95">
+              <div class="text-2xl mb-1">🎃</div>
+              <div class="text-sm font-bold text-white">Yes, works great!</div>
+              <div class="text-[11px] text-orange-300/80 font-medium">We'll be there</div>
+            </div>
+            <div id="cardDateNo" class="date-card cursor-pointer p-4 rounded-2xl border-2 border-stone-800 bg-stone-950 text-center transition active:scale-95">
+              <div class="text-2xl mb-1">👻</div>
+              <div class="text-sm font-bold text-white">No, can't make it</div>
+              <div class="text-[11px] text-stone-400 font-medium">Conflict / Busy</div>
+            </div>
           </div>
         </div>
 
-        <!-- 4. Dish Category & Specific Dish -->
-        <div>
-          <label class="block text-xs font-bold text-orange-300 uppercase tracking-wider mb-1.5">
-            4. Dish / Item You're Bringing *
-          </label>
-          <select id="dishCategory" required class="w-full bg-stone-950 border border-stone-700 focus:border-orange-500 rounded-xl px-4 py-2.5 text-sm text-white mb-2 outline-none">
-            <option value="Chilli">Chilli 🌶️</option>
-            <option value="Soup">Soup 🥣</option>
-            <option value="Appetizer/Snack">Appetizer / Snack 🥨</option>
-            <option value="Drinks">Drinks 🥤</option>
-            <option value="Garnishments">Garnishments (Cheese, sour cream, crackers) 🧀</option>
-            <option value="Disposable Bowls/Cutlery">Disposable Bowls & Cutlery 🥣🍴</option>
-          </select>
-          <input type="text" id="dishName" required placeholder="What kind? (e.g. Brisket Chili, Jalapeño Cornbread, Sodas)" 
-                 class="w-full bg-stone-950 border border-stone-700 focus:border-orange-500 rounded-xl px-4 py-2.5 text-sm text-white placeholder-stone-600 outline-none transition" />
+        <!-- Question 4: Dishes & Live Roster Helper -->
+        <div class="bg-stone-900/80 border border-stone-800 rounded-3xl p-4 sm:p-5 space-y-3">
+          <div class="flex items-center gap-1.5 text-orange-400 text-xs font-bold uppercase tracking-wider">
+            <span>🍲</span> Question 4
+          </div>
+          <label class="block text-sm font-bold text-white">What are you bringing to Chilli Con? *</label>
+
+          <!-- Embedded Already Claimed Box -->
+          <div class="bg-stone-950/90 border border-stone-800 rounded-2xl p-3.5 space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-stone-300 flex items-center gap-1.5">
+                <span>👀</span> Already Claimed by Others:
+              </span>
+              <span class="text-[10px] bg-orange-950 text-orange-400 px-2 py-0.5 rounded-full font-bold">Live Roster</span>
+            </div>
+            <p class="text-[11px] text-stone-400 leading-tight">
+              Check this list to avoid bringing duplicates (e.g. 5 bags of tortilla chips and no spoons!).
+            </p>
+            <div id="claimedDishesBox" class="space-y-1.5 max-h-32 overflow-y-auto pr-1 custom-scroll text-xs">
+              <div class="text-stone-500 italic text-[11px] py-1">No items claimed yet.</div>
+            </div>
+          </div>
+
+          <!-- Category Selection Cards -->
+          <div class="pt-2">
+            <label class="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">Select Primary Category:</label>
+            <div class="grid grid-cols-2 gap-2" id="categoryGrid">
+              <div data-val="Chilli" class="cat-card active cursor-pointer p-3 rounded-2xl border-2 border-orange-500 bg-orange-500/10 transition active:scale-95">
+                <div class="text-xl">🌶️</div>
+                <div class="text-sm font-bold text-white mt-1">Chilli</div>
+                <div class="text-[10px] text-stone-400">Pots, slow cookers</div>
+              </div>
+              <div data-val="Soup" class="cat-card cursor-pointer p-3 rounded-2xl border-2 border-stone-800 bg-stone-950 transition active:scale-95">
+                <div class="text-xl">🥣</div>
+                <div class="text-sm font-bold text-white mt-1">Soup</div>
+                <div class="text-[10px] text-stone-400">Autumn stews & chowders</div>
+              </div>
+              <div data-val="Appetizer/Snack" class="cat-card cursor-pointer p-3 rounded-2xl border-2 border-stone-800 bg-stone-950 transition active:scale-95">
+                <div class="text-xl">🥨</div>
+                <div class="text-sm font-bold text-white mt-1">Appetizer / Snack</div>
+                <div class="text-[10px] text-stone-400">Cornbread, dips, chips</div>
+              </div>
+              <div data-val="Garnishments" class="cat-card cursor-pointer p-3 rounded-2xl border-2 border-stone-800 bg-stone-950 transition active:scale-95">
+                <div class="text-xl">🧀</div>
+                <div class="text-sm font-bold text-white mt-1">Garnishments</div>
+                <div class="text-[10px] text-stone-400">Cheese, sour cream, jalapeños</div>
+              </div>
+              <div data-val="Drinks" class="cat-card cursor-pointer p-3 rounded-2xl border-2 border-stone-800 bg-stone-950 transition active:scale-95">
+                <div class="text-xl">🥤</div>
+                <div class="text-sm font-bold text-white mt-1">Drinks</div>
+                <div class="text-[10px] text-stone-400">Cider, 2-liters, juice, water</div>
+              </div>
+              <div data-val="Disposable Bowls/Cutlery" class="cat-card cursor-pointer p-3 rounded-2xl border-2 border-stone-800 bg-stone-950 transition active:scale-95">
+                <div class="text-xl">🍴</div>
+                <div class="text-sm font-bold text-white mt-1">Bowls & Cutlery</div>
+                <div class="text-[10px] text-stone-400">Sturdy bowls, spoons, napkins</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Specific Dish Name Input -->
+          <div class="pt-1">
+            <label class="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-1.5">Specific Dish Name *</label>
+            <input type="text" id="dishName" required placeholder="e.g. Brisket Chili, Sweet Cornbread, Diet Dr Pepper" 
+                   class="w-full bg-stone-950 border border-stone-800 focus:border-orange-500 rounded-2xl px-4 py-3 text-sm text-white placeholder-stone-600 outline-none transition" />
+          </div>
         </div>
 
-        <!-- 5. Spiciness Scale (1-5) -->
-        <div id="spiceContainer">
-          <div class="flex items-center justify-between mb-1.5">
-            <label class="text-xs font-bold text-orange-300 uppercase tracking-wider">
-              5. Spiciness Level (1 to 5)
-            </label>
-            <span id="spiceValueDisplay" class="text-xs font-black px-2 py-0.5 rounded bg-orange-950 text-orange-400 border border-orange-800/60">Level 2 / 5</span>
+        <!-- Question 5: Spiciness Level Cards (1 to 5 with Skulls & Peppers) -->
+        <div id="spiceSection" class="bg-stone-900/80 border border-stone-800 rounded-3xl p-4 sm:p-5 space-y-2.5">
+          <div class="flex items-center gap-1.5 text-orange-400 text-xs font-bold uppercase tracking-wider">
+            <span>🌶️</span> Question 5
           </div>
-          <input type="range" id="spiceLevel" min="1" max="5" value="2" class="w-full accent-orange-500 cursor-pointer h-2 bg-stone-950 rounded-lg mb-1" />
-          <div class="text-[10px] text-stone-400 flex justify-between px-1">
-            <span>1 (Mild / Zero Heat)</span>
-            <span>3 (Medium Kick)</span>
-            <span>5 (Extremely Hot 🔥)</span>
+          <label class="block text-sm font-bold text-white">Spiciness Level (1 to 5)</label>
+          
+          <div class="grid grid-cols-5 gap-1.5 pt-1" id="spiceGrid">
+            <div data-level="1" class="spice-card cursor-pointer p-2.5 rounded-2xl border-2 border-stone-800 bg-stone-950 text-center transition active:scale-95">
+              <div class="text-lg">🫑</div>
+              <div class="text-xs font-black text-white mt-1">1</div>
+              <div class="text-[9px] text-stone-400 font-bold">Mild</div>
+            </div>
+            <div data-level="2" class="spice-card active cursor-pointer p-2.5 rounded-2xl border-2 border-orange-500 bg-orange-500/10 text-center transition active:scale-95">
+              <div class="text-lg">🌶️</div>
+              <div class="text-xs font-black text-white mt-1">2</div>
+              <div class="text-[9px] text-orange-300 font-bold">Kick</div>
+            </div>
+            <div data-level="3" class="spice-card cursor-pointer p-2.5 rounded-2xl border-2 border-stone-800 bg-stone-950 text-center transition active:scale-95">
+              <div class="text-lg">🌶️🌶️</div>
+              <div class="text-xs font-black text-white mt-1">3</div>
+              <div class="text-[9px] text-stone-400 font-bold">Medium</div>
+            </div>
+            <div data-level="4" class="spice-card cursor-pointer p-2.5 rounded-2xl border-2 border-stone-800 bg-stone-950 text-center transition active:scale-95">
+              <div class="text-lg">🔥</div>
+              <div class="text-xs font-black text-white mt-1">4</div>
+              <div class="text-[9px] text-stone-400 font-bold">Hot!</div>
+            </div>
+            <div data-level="5" class="spice-card cursor-pointer p-2.5 rounded-2xl border-2 border-stone-800 bg-stone-950 text-center transition active:scale-95">
+              <div class="text-lg">💀</div>
+              <div class="text-xs font-black text-white mt-1">5</div>
+              <div class="text-[9px] text-stone-400 font-bold">Hellfire</div>
+            </div>
+          </div>
+
+          <div id="spiceDescription" class="text-center text-xs font-bold text-orange-300 bg-orange-950/40 border border-orange-900/50 py-2 rounded-xl mt-2">
+            Selected: Level 2 - Gentle Kick (Family / Kid Friendly)
           </div>
         </div>
 
-        <!-- 6. Carve Pumpkins -->
-        <div>
-          <label class="block text-xs font-bold text-orange-300 uppercase tracking-wider mb-1.5">
-            6. Should we carve pumpkins? 🎃 *
-          </label>
-          <div class="grid grid-cols-2 gap-3">
-            <label class="flex items-center justify-center gap-2 p-3 bg-stone-950 border border-stone-800 rounded-xl cursor-pointer hover:border-orange-500 has-[:checked]:border-orange-500 has-[:checked]:bg-orange-500/10 transition">
-              <input type="radio" name="pumpkinVote" value="Yes" class="accent-orange-500" required checked />
-              <span class="text-xs sm:text-sm font-semibold">🎃 Yes, let's carve!</span>
-            </label>
-            <label class="flex items-center justify-center gap-2 p-3 bg-stone-950 border border-stone-800 rounded-xl cursor-pointer hover:border-orange-500 has-[:checked]:border-orange-500 has-[:checked]:bg-orange-500/10 transition">
-              <input type="radio" name="pumpkinVote" value="No" class="accent-orange-500" />
-              <span class="text-xs sm:text-sm font-semibold">🙅 Pass on carving</span>
-            </label>
+        <!-- Question 6: Pumpkin Carving Cards -->
+        <div class="bg-stone-900/80 border border-stone-800 rounded-3xl p-4 sm:p-5 space-y-2.5">
+          <div class="flex items-center gap-1.5 text-orange-400 text-xs font-bold uppercase tracking-wider">
+            <span>🎃</span> Question 6
+          </div>
+          <label class="block text-sm font-bold text-white">Should we carve pumpkins together at the party? *</label>
+          <div class="grid grid-cols-2 gap-3 pt-1">
+            <div id="cardCarveYes" class="carve-card active cursor-pointer p-4 rounded-2xl border-2 border-purple-500 bg-purple-500/10 text-center transition active:scale-95">
+              <div class="text-2xl mb-1">🔪 🎃</div>
+              <div class="text-sm font-bold text-white">Yes, let's carve!</div>
+              <div class="text-[11px] text-purple-300 font-medium">Bring carving tools</div>
+            </div>
+            <div id="cardCarveNo" class="carve-card cursor-pointer p-4 rounded-2xl border-2 border-stone-800 bg-stone-950 text-center transition active:scale-95">
+              <div class="text-2xl mb-1">🥣 😋</div>
+              <div class="text-sm font-bold text-white">No, just eat & chill</div>
+              <div class="text-[11px] text-stone-400 font-medium">Less mess</div>
+            </div>
           </div>
         </div>
 
-        <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 hover:from-orange-500 hover:to-amber-500 text-white font-extrabold py-3.5 rounded-xl shadow-lg shadow-orange-600/30 transition transform active:scale-[0.98]">
-          Submit My RSVP & Dish 🎃
+        <!-- Question 7: Optional Notes -->
+        <div class="bg-stone-900/80 border border-stone-800 rounded-3xl p-4 sm:p-5 space-y-2">
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-orange-400 font-bold uppercase tracking-wider">Special Notes / Allergies</span>
+            <span class="text-stone-500">(Optional)</span>
+          </div>
+          <input type="text" id="notes" placeholder="e.g. Gluten-free, bringing an electric slow cooker with cord" 
+                 class="w-full bg-stone-950 border border-stone-800 focus:border-orange-500 rounded-2xl px-4 py-3 text-sm text-white placeholder-stone-600 outline-none transition" />
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-orange-600 via-amber-600 to-purple-600 hover:from-orange-500 hover:to-purple-500 text-white font-black py-4 rounded-2xl shadow-xl shadow-orange-600/30 active:scale-[0.98] transition text-base tracking-wide flex items-center justify-center gap-2">
+          <span>🔥</span> <span id="submitBtnText">Cast Into The Cauldron (Submit RSVP)</span>
         </button>
       </form>
-    </div>
+    </section>
 
-    <!-- Submitted Entries Roster (With Edit & Delete Buttons) -->
-    <div class="space-y-3">
-      <div class="flex items-center justify-between px-1">
-        <h3 class="text-xs font-extrabold text-stone-400 uppercase tracking-wider">All Submissions</h3>
-        <span class="text-[11px] text-stone-500 italic">Tap ✏️ to edit or 🗑️ to delete</span>
+    <!-- ================= VIEW 2: POTLUCK ROSTER ================= -->
+    <section id="viewPotluck" class="hidden space-y-4">
+      <div class="bg-stone-900/80 border border-stone-800 rounded-3xl p-4 sm:p-5 space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-base font-extrabold text-white flex items-center gap-2">
+              <span>🍲</span> Who Is Bringing What
+            </h2>
+            <p class="text-xs text-stone-400">Live roster of all submitted family contributions</p>
+          </div>
+          <span class="text-xs font-black text-orange-400 bg-orange-950 border border-orange-900 px-2.5 py-1 rounded-full" id="rosterCountBadge">0 Total</span>
+        </div>
+
+        <!-- Filter Pills -->
+        <div class="flex gap-1.5 overflow-x-auto pb-1 custom-scroll" id="filterPills">
+          <button data-filter="All" class="filter-pill active px-3 py-1.5 rounded-full text-xs font-bold bg-orange-600 text-white whitespace-nowrap">All</button>
+          <button data-filter="Chilli" class="filter-pill px-3 py-1.5 rounded-full text-xs font-bold bg-stone-950 text-stone-400 border border-stone-800 hover:text-white whitespace-nowrap">Chilli</button>
+          <button data-filter="Soup" class="filter-pill px-3 py-1.5 rounded-full text-xs font-bold bg-stone-950 text-stone-400 border border-stone-800 hover:text-white whitespace-nowrap">Soup</button>
+          <button data-filter="Appetizer/Snack" class="filter-pill px-3 py-1.5 rounded-full text-xs font-bold bg-stone-950 text-stone-400 border border-stone-800 hover:text-white whitespace-nowrap">Snacks</button>
+          <button data-filter="Drinks" class="filter-pill px-3 py-1.5 rounded-full text-xs font-bold bg-stone-950 text-stone-400 border border-stone-800 hover:text-white whitespace-nowrap">Drinks</button>
+          <button data-filter="Disposable Bowls/Cutlery" class="filter-pill px-3 py-1.5 rounded-full text-xs font-bold bg-stone-950 text-stone-400 border border-stone-800 hover:text-white whitespace-nowrap">Bowls/Cutlery</button>
+        </div>
       </div>
-      <div id="rosterList" class="space-y-3">
-        <div class="text-stone-500 text-xs italic text-center py-4">Waiting for responses...</div>
+
+      <!-- Roster Cards Container -->
+      <div id="fullRosterList" class="space-y-3">
+        <div class="text-center text-xs text-stone-500 py-10">Loading contributions...</div>
       </div>
-    </div>
+    </section>
+
+    <!-- ================= VIEW 3: PARTY STATS ================= -->
+    <section id="viewStats" class="hidden space-y-4">
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-stone-900/80 border border-stone-800 p-4 rounded-3xl text-center">
+          <div class="text-3xl font-black text-orange-400" id="statsHeadcount">0</div>
+          <div class="text-xs font-bold text-stone-400 uppercase tracking-wider mt-1">Total Attendance</div>
+        </div>
+        <div class="bg-stone-900/80 border border-stone-800 p-4 rounded-3xl text-center">
+          <div class="text-3xl font-black text-amber-400" id="statsPotluckItems">0</div>
+          <div class="text-xs font-bold text-stone-400 uppercase tracking-wider mt-1">Dishes / Items</div>
+        </div>
+      </div>
+
+      <!-- Saturday 17th Vote Breakdown -->
+      <div class="bg-stone-900/80 border border-stone-800 p-5 rounded-3xl space-y-3">
+        <h3 class="text-xs font-extrabold text-stone-300 uppercase tracking-wider flex items-center gap-1.5">
+          <span>📅</span> Saturday the 17th Vote
+        </h3>
+        <div class="space-y-2">
+          <div>
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span class="text-green-400">Yes, works great!</span>
+              <span id="statsSatYesText">0 (0%)</span>
+            </div>
+            <div class="w-full bg-stone-950 rounded-full h-3 overflow-hidden border border-stone-800">
+              <div id="statsSatYesBar" class="bg-green-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span class="text-stone-400">No, conflict</span>
+              <span id="statsSatNoText">0 (0%)</span>
+            </div>
+            <div class="w-full bg-stone-950 rounded-full h-3 overflow-hidden border border-stone-800">
+              <div id="statsSatNoBar" class="bg-red-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pumpkin Carving Vote Breakdown -->
+      <div class="bg-stone-900/80 border border-stone-800 p-5 rounded-3xl space-y-3">
+        <h3 class="text-xs font-extrabold text-stone-300 uppercase tracking-wider flex items-center gap-1.5">
+          <span>🎃</span> Pumpkin Carving Poll
+        </h3>
+        <div class="space-y-2">
+          <div>
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span class="text-purple-400">Yes, let's carve!</span>
+              <span id="statsCarveYesText">0 (0%)</span>
+            </div>
+            <div class="w-full bg-stone-950 rounded-full h-3 overflow-hidden border border-stone-800">
+              <div id="statsCarveYesBar" class="bg-purple-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span class="text-stone-400">No, just eat</span>
+              <span id="statsCarveNoText">0 (0%)</span>
+            </div>
+            <div class="w-full bg-stone-950 rounded-full h-3 overflow-hidden border border-stone-800">
+              <div id="statsCarveNoBar" class="bg-stone-700 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Coverage Breakdown -->
+      <div class="bg-stone-900/80 border border-stone-800 p-5 rounded-3xl space-y-3">
+        <h3 class="text-xs font-extrabold text-stone-300 uppercase tracking-wider flex items-center gap-1.5">
+          <span>🥘</span> Dish Categories Covered
+        </h3>
+        <div class="grid grid-cols-2 gap-2 text-xs" id="categoryStatsGrid">
+          <!-- Filled dynamically -->
+        </div>
+      </div>
+    </section>
 
   </main>
 
   <script>
-    // Your exact Firebase project config
+    // Configured directly with your live Firebase credentials
     const firebaseConfig = {
       apiKey: "AIzaSyCB2SjW7VOdFVLsqeHQ7QpGhv5Gwv3TAyY",
       authDomain: "chilli-con-2026.firebaseapp.com",
@@ -226,56 +433,136 @@
     const db = firebase.firestore();
     const responsesRef = db.collection("chilli_con_2026");
 
-    // UI Elements
-    const form = document.getElementById("rsvpForm");
-    const entryIdInput = document.getElementById("entryId");
-    const editBanner = document.getElementById("editBanner");
-    const cancelEditBtn = document.getElementById("cancelEditBtn");
-    const headcountInput = document.getElementById("headcount");
-    const spiceLevelInput = document.getElementById("spiceLevel");
-    const spiceValueDisplay = document.getElementById("spiceValueDisplay");
-    const dishCategorySelect = document.getElementById("dishCategory");
-    const spiceContainer = document.getElementById("spiceContainer");
+    // Form State Variables
+    let selectedDate = "Yes";
+    let selectedCategory = "Chilli";
+    let selectedSpice = 2;
+    let selectedCarve = "Yes";
+    let allEntries = [];
+    let currentFilter = "All";
+
+    // Tab Navigation Logic
+    const tabBtnForm = document.getElementById("tabBtnForm");
+    const tabBtnPotluck = document.getElementById("tabBtnPotluck");
+    const tabBtnStats = document.getElementById("tabBtnStats");
+    const viewForm = document.getElementById("viewForm");
+    const viewPotluck = document.getElementById("viewPotluck");
+    const viewStats = document.getElementById("viewStats");
+
+    function switchTab(activeBtn, activeView) {
+      [tabBtnForm, tabBtnPotluck, tabBtnStats].forEach(btn => {
+        btn.className = "nav-tab py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-stone-400 hover:text-white";
+      });
+      activeBtn.className = "nav-tab active py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-orange-600 text-white shadow";
+      
+      viewForm.classList.add("hidden");
+      viewPotluck.classList.add("hidden");
+      viewStats.classList.add("hidden");
+      activeView.classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    tabBtnForm.onclick = () => switchTab(tabBtnForm, viewForm);
+    tabBtnPotluck.onclick = () => switchTab(tabBtnPotluck, viewPotluck);
+    tabBtnStats.onclick = () => switchTab(tabBtnStats, viewStats);
 
     // Headcount Stepper
+    const headcountInput = document.getElementById("headcount");
     document.getElementById("incHeadcount").onclick = () => {
       let v = parseInt(headcountInput.value) || 1;
-      if (v < 20) headcountInput.value = v + 1;
+      if (v < 25) headcountInput.value = v + 1;
     };
     document.getElementById("decHeadcount").onclick = () => {
       let v = parseInt(headcountInput.value) || 1;
       if (v > 1) headcountInput.value = v - 1;
     };
 
-    // Spice Display
-    spiceLevelInput.oninput = (e) => {
-      spiceValueDisplay.innerText = `Level ${e.target.value} / 5`;
-    };
-
-    // Hide spice slider for non-edible/drink items
-    dishCategorySelect.onchange = (e) => {
-      if (e.target.value === "Drinks" || e.target.value === "Disposable Bowls/Cutlery") {
-        spiceContainer.classList.add("opacity-25", "pointer-events-none");
+    // Date Availability Cards
+    const cardDateYes = document.getElementById("cardDateYes");
+    const cardDateNo = document.getElementById("cardDateNo");
+    function setDateChoice(val) {
+      selectedDate = val;
+      if (val === "Yes") {
+        cardDateYes.className = "date-card active cursor-pointer p-4 rounded-2xl border-2 border-orange-500 bg-orange-500/10 text-center transition active:scale-95";
+        cardDateNo.className = "date-card cursor-pointer p-4 rounded-2xl border-2 border-stone-800 bg-stone-950 text-center transition active:scale-95";
       } else {
-        spiceContainer.classList.remove("opacity-25", "pointer-events-none");
+        cardDateNo.className = "date-card active cursor-pointer p-4 rounded-2xl border-2 border-orange-500 bg-orange-500/10 text-center transition active:scale-95";
+        cardDateYes.className = "date-card cursor-pointer p-4 rounded-2xl border-2 border-stone-800 bg-stone-950 text-center transition active:scale-95";
       }
-    };
+    }
+    cardDateYes.onclick = () => setDateChoice("Yes");
+    cardDateNo.onclick = () => setDateChoice("No");
 
-    // Cancel Edit
-    cancelEditBtn.onclick = () => {
-      form.reset();
-      entryIdInput.value = "";
-      editBanner.classList.add("hidden");
-      document.getElementById("submitBtn").innerText = "Submit My RSVP & Dish 🎃";
-    };
+    // Category Selection Cards
+    const categoryGrid = document.getElementById("categoryGrid");
+    const spiceSection = document.getElementById("spiceSection");
+    function setCategory(cat) {
+      selectedCategory = cat;
+      categoryGrid.querySelectorAll(".cat-card").forEach(el => {
+        if (el.getAttribute("data-val") === cat) {
+          el.className = "cat-card active cursor-pointer p-3 rounded-2xl border-2 border-orange-500 bg-orange-500/10 transition active:scale-95";
+        } else {
+          el.className = "cat-card cursor-pointer p-3 rounded-2xl border-2 border-stone-800 bg-stone-950 transition active:scale-95";
+        }
+      });
+      if (cat === "Drinks" || cat === "Disposable Bowls/Cutlery") {
+        spiceSection.classList.add("opacity-25", "pointer-events-none");
+      } else {
+        spiceSection.classList.remove("opacity-25", "pointer-events-none");
+      }
+    }
+    categoryGrid.querySelectorAll(".cat-card").forEach(el => {
+      el.onclick = () => setCategory(el.getAttribute("data-val"));
+    });
 
-    // Share link
+    // Spiciness Scale Cards
+    const spiceDescriptions = {
+      1: "Selected: Level 1 - Mild (Zero Heat / Very Kid Friendly)",
+      2: "Selected: Level 2 - Gentle Kick (Family / Kid Friendly)",
+      3: "Selected: Level 3 - Medium (Classic Chili Heat)",
+      4: "Selected: Level 4 - Hot! (Have Milk Ready)",
+      5: "Selected: Level 5 - Hellfire 💀 (Ghost / Reaper Warning!)"
+    };
+    const spiceGrid = document.getElementById("spiceGrid");
+    const spiceDescEl = document.getElementById("spiceDescription");
+    function setSpice(level) {
+      selectedSpice = parseInt(level);
+      spiceGrid.querySelectorAll(".spice-card").forEach(el => {
+        if (parseInt(el.getAttribute("data-level")) === selectedSpice) {
+          el.className = "spice-card active cursor-pointer p-2.5 rounded-2xl border-2 border-orange-500 bg-orange-500/10 text-center transition active:scale-95";
+        } else {
+          el.className = "spice-card cursor-pointer p-2.5 rounded-2xl border-2 border-stone-800 bg-stone-950 text-center transition active:scale-95";
+        }
+      });
+      spiceDescEl.innerText = spiceDescriptions[selectedSpice] || "";
+    }
+    spiceGrid.querySelectorAll(".spice-card").forEach(el => {
+      el.onclick = () => setSpice(el.getAttribute("data-level"));
+    });
+
+    // Pumpkin Carving Cards
+    const cardCarveYes = document.getElementById("cardCarveYes");
+    const cardCarveNo = document.getElementById("cardCarveNo");
+    function setCarve(val) {
+      selectedCarve = val;
+      if (val === "Yes") {
+        cardCarveYes.className = "carve-card active cursor-pointer p-4 rounded-2xl border-2 border-purple-500 bg-purple-500/10 text-center transition active:scale-95";
+        cardCarveNo.className = "carve-card cursor-pointer p-4 rounded-2xl border-2 border-stone-800 bg-stone-950 text-center transition active:scale-95";
+      } else {
+        cardCarveNo.className = "carve-card active cursor-pointer p-4 rounded-2xl border-2 border-purple-500 bg-purple-500/10 text-center transition active:scale-95";
+        cardCarveYes.className = "carve-card cursor-pointer p-4 rounded-2xl border-2 border-stone-800 bg-stone-950 text-center transition active:scale-95";
+      }
+    }
+    cardCarveYes.onclick = () => setCarve("Yes");
+    cardCarveNo.onclick = () => setCarve("No");
+
+    // Native Share Button
     document.getElementById("shareBtn").onclick = async () => {
       if (navigator.share) {
         try {
           await navigator.share({
             title: "Chilli Con 2026 RSVP",
-            text: "RSVP and pick what dish you're bringing to Chilli Con 2026!",
+            text: "RSVP & pick what dish you're bringing to Chilli Con 2026!",
             url: window.location.href
           });
           return;
@@ -285,161 +572,280 @@
       alert("Link copied! Text it to the family group chat.");
     };
 
-    // Form Submit (Create or Update)
+    // Cancel Edit
+    const editBanner = document.getElementById("editBanner");
+    const entryIdInput = document.getElementById("entryId");
+    const form = document.getElementById("rsvpForm");
+    const submitBtnText = document.getElementById("submitBtnText");
+
+    document.getElementById("cancelEditBtn").onclick = () => {
+      form.reset();
+      entryIdInput.value = "";
+      setDateChoice("Yes");
+      setCategory("Chilli");
+      setSpice(2);
+      setCarve("Yes");
+      editBanner.classList.add("hidden");
+      submitBtnText.innerText = "Cast Into The Cauldron (Submit RSVP)";
+    };
+
+    // Form Submission (Add or Update in Firestore)
     form.onsubmit = async (e) => {
       e.preventDefault();
       const submitBtn = document.getElementById("submitBtn");
       submitBtn.disabled = true;
-      submitBtn.innerText = "Saving...";
+      const originalText = submitBtnText.innerText;
+      submitBtnText.innerText = "Casting into Cauldron...";
 
-      const isNonSpicyCategory = dishCategorySelect.value === "Drinks" || dishCategorySelect.value === "Disposable Bowls/Cutlery";
-      const data = {
+      const isNonSpicy = selectedCategory === "Drinks" || selectedCategory === "Disposable Bowls/Cutlery";
+      const payload = {
         name: document.getElementById("userName").value.trim(),
         headcount: parseInt(headcountInput.value) || 1,
-        dateVote: document.querySelector('input[name="dateVote"]:checked').value,
-        dishCategory: dishCategorySelect.value,
+        dateVote: selectedDate,
+        dishCategory: selectedCategory,
         dishName: document.getElementById("dishName").value.trim(),
-        spiceLevel: isNonSpicyCategory ? null : parseInt(spiceLevelInput.value),
-        pumpkinVote: document.querySelector('input[name="pumpkinVote"]:checked').value,
+        spiceLevel: isNonSpicy ? null : selectedSpice,
+        pumpkinVote: selectedCarve,
+        notes: document.getElementById("notes").value.trim(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       };
 
       try {
         const id = entryIdInput.value;
         if (id) {
-          await responsesRef.doc(id).update(data);
-          alert("RSVP updated successfully!");
+          await responsesRef.doc(id).update(payload);
+          alert("Your RSVP has been updated! 🎃");
         } else {
-          await responsesRef.add(data);
-          alert("Got your RSVP! See you at Chilli Con 🎃");
+          await responsesRef.add(payload);
+          alert("Got your RSVP! See you at Chilli Con 2026 🎃");
         }
         form.reset();
         entryIdInput.value = "";
+        setDateChoice("Yes");
+        setCategory("Chilli");
+        setSpice(2);
+        setCarve("Yes");
         editBanner.classList.add("hidden");
-        document.getElementById("submitBtn").innerText = "Submit My RSVP & Dish 🎃";
+        submitBtnText.innerText = "Cast Into The Cauldron (Submit RSVP)";
+        switchTab(tabBtnPotluck, viewPotluck);
       } catch (err) {
-        console.error(err);
         alert("Error saving: " + err.message);
       } finally {
         submitBtn.disabled = false;
+        submitBtnText.innerText = originalText;
       }
     };
 
-    // Real-Time Sync across all phones
-    responsesRef.orderBy("updatedAt", "desc").onSnapshot((snapshot) => {
-      const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    // Filter Pills Click
+    document.querySelectorAll(".filter-pill").forEach(pill => {
+      pill.onclick = () => {
+        document.querySelectorAll(".filter-pill").forEach(p => {
+          p.className = "filter-pill px-3 py-1.5 rounded-full text-xs font-bold bg-stone-950 text-stone-400 border border-stone-800 hover:text-white whitespace-nowrap";
+        });
+        pill.className = "filter-pill active px-3 py-1.5 rounded-full text-xs font-bold bg-orange-600 text-white whitespace-nowrap";
+        currentFilter = pill.getAttribute("data-filter");
+        renderRoster();
+      };
+    });
 
-      let totalHeadcount = 0;
-      let totalChiliSoup = 0;
-      let satYes = 0;
-      let carvingYes = 0;
+    // Helper: Category Icon Map
+    function getCatIcon(cat) {
+      switch(cat) {
+        case "Chilli": return "🌶️";
+        case "Soup": return "🥣";
+        case "Appetizer/Snack": return "🥨";
+        case "Garnishments": return "🧀";
+        case "Drinks": return "🥤";
+        case "Disposable Bowls/Cutlery": return "🍴";
+        default: return "🍲";
+      }
+    }
 
-      const dishListEl = document.getElementById("dishList");
-      const rosterListEl = document.getElementById("rosterList");
+    // Render Potluck Roster Cards
+    function renderRoster() {
+      const rosterContainer = document.getElementById("fullRosterList");
+      const filtered = currentFilter === "All" ? allEntries : allEntries.filter(e => e.dishCategory === currentFilter);
 
-      if (docs.length === 0) {
-        dishListEl.innerHTML = `<div class="text-xs text-stone-500 italic py-2 text-center">No dishes claimed yet.</div>`;
-        rosterListEl.innerHTML = `<div class="text-stone-500 text-xs italic text-center py-4">Waiting for responses...</div>`;
-      } else {
-        dishListEl.innerHTML = "";
-        rosterListEl.innerHTML = "";
+      if (filtered.length === 0) {
+        rosterContainer.innerHTML = `<div class="text-center text-xs text-stone-500 py-8 bg-stone-900/40 rounded-2xl border border-stone-800">No dishes in this category yet.</div>`;
+        return;
       }
 
-      docs.forEach(item => {
-        totalHeadcount += (item.headcount || 0);
-        if (item.dishCategory === "Chilli" || item.dishCategory === "Soup") totalChiliSoup++;
-        if (item.dateVote === "Yes") satYes++;
-        if (item.pumpkinVote === "Yes") carvingYes++;
-
-        // Duplicate prevention claim item
-        const dishTag = document.createElement("div");
-        dishTag.className = "flex items-center justify-between bg-stone-950/80 border border-stone-800 rounded-xl px-3 py-2 text-xs";
-        dishTag.innerHTML = `
-          <div>
-            <span class="font-bold text-orange-400">${item.name}</span>: 
-            <span class="text-white font-semibold">${item.dishName}</span>
-            <span class="text-stone-400 text-[11px]">(${item.dishCategory})</span>
-          </div>
-          ${item.spiceLevel ? `<span class="text-amber-500 font-bold ml-2 text-xs">${'🌶️'.repeat(item.spiceLevel)}</span>` : ''}
-        `;
-        dishListEl.appendChild(dishTag);
-
-        // Detailed Roster Card with EDIT and DELETE buttons
+      rosterContainer.innerHTML = "";
+      filtered.forEach(item => {
         const card = document.createElement("div");
-        card.className = "bg-stone-900 border border-stone-800 p-4 rounded-2xl flex items-start justify-between gap-3 shadow-md";
+        card.className = "bg-stone-900/90 border border-stone-800 p-4 rounded-3xl shadow-lg space-y-2.5 transition";
         card.innerHTML = `
-          <div class="space-y-1 text-xs flex-1">
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="font-bold text-sm text-white">${item.name}</span>
-              <span class="bg-orange-950 text-orange-300 border border-orange-800/50 px-2 py-0.5 rounded-full font-bold text-[11px]">${item.headcount} attending</span>
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-xl">${getCatIcon(item.dishCategory)}</span>
+              <div>
+                <span class="font-extrabold text-sm text-white">${item.name}</span>
+                <span class="ml-1.5 bg-orange-950/80 text-orange-400 border border-orange-900 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  👥 ${item.headcount} ${item.headcount > 1 ? 'people' : 'person'}
+                </span>
+              </div>
             </div>
-            <p class="text-stone-300 pt-0.5">🍲 <strong class="text-white">${item.dishCategory}:</strong> ${item.dishName} ${item.spiceLevel ? `<span class="text-amber-400 font-bold">(Spiciness: ${item.spiceLevel}/5)</span>` : ''}</p>
-            <p class="text-stone-400">📅 Sat the 17th: <strong class="${item.dateVote === 'Yes' ? 'text-green-400' : 'text-red-400'}">${item.dateVote}</strong> | 🎃 Carve: <strong>${item.pumpkinVote}</strong></p>
+            <div class="flex items-center gap-1">
+              <button data-id="${item.id}" class="edit-entry-btn text-xs bg-stone-800 hover:bg-stone-700 text-stone-200 px-3 py-1.5 rounded-xl border border-stone-700 active:scale-95 transition font-bold flex items-center gap-1">
+                <span>✏️</span> Edit
+              </button>
+              <button data-id="${item.id}" data-name="${item.name}" class="delete-entry-btn text-xs bg-red-950/40 hover:bg-red-900/60 text-red-300 hover:text-white px-2.5 py-1.5 rounded-xl border border-red-800/40 active:scale-95 transition" title="Delete">
+                🗑️
+              </button>
+            </div>
           </div>
-          <div class="flex items-center gap-1.5 self-center">
-            <button data-id="${item.id}" class="edit-btn text-xs bg-stone-800 hover:bg-stone-700 text-stone-200 px-3 py-2 rounded-xl border border-stone-700 active:scale-95 transition font-semibold">
-              Edit
-            </button>
-            <button data-id="${item.id}" data-name="${item.name}" class="delete-btn text-xs bg-red-950/40 hover:bg-red-900/60 text-red-300 hover:text-white px-2.5 py-2 rounded-xl border border-red-800/40 active:scale-95 transition" title="Delete">
-              🗑️
-            </button>
+
+          <div class="bg-stone-950/80 rounded-2xl p-3 border border-stone-800/60 space-y-1.5 text-xs">
+            <div class="text-stone-300">
+              <strong class="text-orange-400">${item.dishCategory}:</strong> <span class="font-bold text-white">${item.dishName}</span>
+            </div>
+            ${item.notes ? `<div class="text-[11px] text-stone-400 italic">📝 "${item.notes}"</div>` : ''}
+            <div class="flex flex-wrap gap-1.5 pt-1">
+              ${item.spiceLevel ? `<span class="bg-amber-950/70 border border-amber-800/60 text-amber-300 px-2 py-0.5 rounded-lg text-[10px] font-bold">Heat: ${item.spiceLevel}/5${'🌶️'.repeat(item.spiceLevel)}</span>` : ''}
+              <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold ${item.dateVote === 'Yes' ? 'bg-green-950/70 border border-green-800/60 text-green-300' : 'bg-red-950/70 border border-red-800/60 text-red-300'}">
+                📅 Sat 17th: ${item.dateVote}
+              </span>
+              <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold ${item.pumpkinVote === 'Yes' ? 'bg-purple-950/70 border border-purple-800/60 text-purple-300' : 'bg-stone-800 border border-stone-700 text-stone-400'}">
+                🎃 Carve: ${item.pumpkinVote}
+              </span>
+            </div>
           </div>
         `;
-        rosterListEl.appendChild(card);
+        rosterContainer.appendChild(card);
       });
 
-      // Update counters
-      document.getElementById("statHeadcount").innerText = totalHeadcount;
-      document.getElementById("statChiliCount").innerText = totalChiliSoup;
-      document.getElementById("statSatYes").innerText = satYes;
-      document.getElementById("statCarvingYes").innerText = carvingYes;
-      document.getElementById("dishCountLabel").innerText = `${docs.length} claimed`;
-
-      // Wire Edit button clicks
-      document.querySelectorAll(".edit-btn").forEach(btn => {
+      // Wire Edit Buttons
+      rosterContainer.querySelectorAll(".edit-entry-btn").forEach(btn => {
         btn.onclick = () => {
           const id = btn.getAttribute("data-id");
-          const item = docs.find(d => d.id === id);
+          const item = allEntries.find(e => e.id === id);
           if (!item) return;
 
           entryIdInput.value = item.id;
           document.getElementById("userName").value = item.name;
           headcountInput.value = item.headcount;
-          dishCategorySelect.value = item.dishCategory;
           document.getElementById("dishName").value = item.dishName;
-          if (item.spiceLevel) {
-            spiceLevelInput.value = item.spiceLevel;
-            spiceValueDisplay.innerText = `Level ${item.spiceLevel} / 5`;
-          }
-          const dateRadio = document.querySelector(`input[name="dateVote"][value="${item.dateVote}"]`);
-          if (dateRadio) dateRadio.checked = true;
-          const pumpkinRadio = document.querySelector(`input[name="pumpkinVote"][value="${item.pumpkinVote}"]`);
-          if (pumpkinRadio) pumpkinRadio.checked = true;
+          document.getElementById("notes").value = item.notes || "";
+
+          setDateChoice(item.dateVote || "Yes");
+          setCategory(item.dishCategory || "Chilli");
+          if (item.spiceLevel) setSpice(item.spiceLevel);
+          setCarve(item.pumpkinVote || "Yes");
 
           editBanner.classList.remove("hidden");
-          document.getElementById("submitBtn").innerText = "Update RSVP ✏️";
-          form.scrollIntoView({ behavior: "smooth" });
+          submitBtnText.innerText = "Update RSVP ✏️";
+          switchTab(tabBtnForm, viewForm);
         };
       });
 
-      // Wire Delete button clicks
-      document.querySelectorAll(".delete-btn").forEach(btn => {
+      // Wire Delete Buttons
+      rosterContainer.querySelectorAll(".delete-entry-btn").forEach(btn => {
         btn.onclick = async () => {
           const id = btn.getAttribute("data-id");
           const name = btn.getAttribute("data-name") || "this entry";
-          
           if (confirm(`Are you sure you want to remove the RSVP for "${name}"?`)) {
             try {
               await responsesRef.doc(id).delete();
               if (entryIdInput.value === id) {
-                cancelEditBtn.click();
+                document.getElementById("cancelEditBtn").click();
               }
             } catch (err) {
-              alert("Error deleting entry: " + err.message);
+              alert("Error deleting: " + err.message);
             }
           }
         };
       });
+    }
+
+    // Real-Time Listener on Firestore Collection
+    responsesRef.orderBy("updatedAt", "desc").onSnapshot(snapshot => {
+      allEntries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      // 1. Update Hero Stats & Counters
+      let totalHeadcount = 0;
+      let satYesCount = 0;
+      let carveYesCount = 0;
+      const catCount = {};
+
+      allEntries.forEach(e => {
+        totalHeadcount += (e.headcount || 1);
+        if (e.dateVote === "Yes") satYesCount++;
+        if (e.pumpkinVote === "Yes") carveYesCount++;
+        catCount[e.dishCategory] = (catCount[e.dishCategory] || 0) + 1;
+      });
+
+      const satPercent = allEntries.length > 0 ? Math.round((satYesCount / allEntries.length) * 100) : 0;
+      const carvePercent = allEntries.length > 0 ? Math.round((carveYesCount / allEntries.length) * 100) : 0;
+
+      document.getElementById("heroTotalGuests").innerText = totalHeadcount;
+      document.getElementById("heroDishesClaimed").innerText = allEntries.length;
+      document.getElementById("heroSatPercent").innerText = `${satPercent}%`;
+      document.getElementById("badgePotluckCount").innerText = allEntries.length;
+      document.getElementById("rosterCountBadge").innerText = `${allEntries.length} Items`;
+
+      // 2. Update Question 4 Claimed List (Duplicate Prevention)
+      const claimedBox = document.getElementById("claimedDishesBox");
+      if (allEntries.length === 0) {
+        claimedBox.innerHTML = `<div class="text-stone-500 italic text-[11px] py-1">No items claimed yet.</div>`;
+      } else {
+        claimedBox.innerHTML = "";
+        allEntries.forEach(item => {
+          const row = document.createElement("div");
+          row.className = "flex items-center justify-between bg-stone-900 border border-stone-800/80 px-2.5 py-1.5 rounded-xl text-[11px]";
+          row.innerHTML = `
+            <div>
+              <span class="font-bold text-orange-400">${item.name}:</span>
+              <span class="text-white font-semibold ml-1">${item.dishName}</span>
+              <span class="text-stone-400">(${item.dishCategory})</span>
+            </div>
+            ${item.spiceLevel ? `<span class="text-amber-500 font-bold ml-1">${'🌶️'.repeat(item.spiceLevel)}</span>` : ''}
+          `;
+          claimedBox.appendChild(row);
+        });
+      }
+
+      // 3. Update Party Stats Tab
+      document.getElementById("statsHeadcount").innerText = totalHeadcount;
+      document.getElementById("statsPotluckItems").innerText = allEntries.length;
+
+      document.getElementById("statsSatYesText").innerText = `${satYesCount} (${satPercent}%)`;
+      document.getElementById("statsSatYesBar").style.width = `${satPercent}%`;
+      document.getElementById("statsSatNoText").innerText = `${allEntries.length - satYesCount} (${100 - satPercent}%)`;
+      document.getElementById("statsSatNoBar").style.width = `${100 - satPercent}%`;
+
+      document.getElementById("statsCarveYesText").innerText = `${carveYesCount} (${carvePercent}%)`;
+      document.getElementById("statsCarveYesBar").style.width = `${carvePercent}%`;
+      document.getElementById("statsCarveNoText").innerText = `${allEntries.length - carveYesCount} (${100 - carvePercent}%)`;
+      document.getElementById("statsCarveNoBar").style.width = `${100 - carvePercent}%`;
+
+      // Category breakdown grid
+      const catStatsGrid = document.getElementById("categoryStatsGrid");
+      const categories = [
+        { label: "Chilli", icon: "🌶️" },
+        { label: "Soup", icon: "🥣" },
+        { label: "Appetizer/Snack", icon: "🥨" },
+        { label: "Garnishments", icon: "🧀" },
+        { label: "Drinks", icon: "🥤" },
+        { label: "Disposable Bowls/Cutlery", icon: "🍴" }
+      ];
+      catStatsGrid.innerHTML = "";
+      categories.forEach(c => {
+        const count = catCount[c.label] || 0;
+        const box = document.createElement("div");
+        box.className = "bg-stone-950 p-2.5 rounded-2xl border border-stone-800 flex items-center justify-between";
+        box.innerHTML = `
+          <div class="flex items-center gap-1.5">
+            <span>${c.icon}</span>
+            <span class="font-bold text-stone-300 text-[11px]">${c.label}</span>
+          </div>
+          <span class="font-extrabold ${count > 0 ? 'text-orange-400' : 'text-stone-600'}">${count}</span>
+        `;
+        catStatsGrid.appendChild(box);
+      });
+
+      // 4. Re-render Potluck Roster View
+      renderRoster();
     });
   </script>
 </body>
