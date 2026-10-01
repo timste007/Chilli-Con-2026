@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Chilli Con 2026 | Family Potluck & Poll</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #0b0612;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(249, 115, 22, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(168, 85, 247, 0.12) 0%, transparent 40%);
+      color: #f3f4f6;
+    }
+    .spooky-font {
+      font-family: 'Creepster', cursive;
+      letter-spacing: 2px;
+    }
+    .chili-glow {
+      box-shadow: 0 0 25px rgba(249, 115, 22, 0.25);
+    }
+  </style>
+</head>
+<body class="min-h-screen pb-16 antialiased selection:bg-orange-600 selection:text-white">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-[#0b0612]/95 backdrop-blur-md border-b border-orange-900/40 px-4 py-3">
+    <div class="max-w-xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-3xl">🎃</span>
+        <div>
+          <h1 class="spooky-font text-2xl text-orange-500 tracking-wider">CHILLI CON 2026</h1>
+          <p class="text-[11px] text-orange-300/70 font-semibold tracking-wide uppercase">Family Potluck & Poll</p>
+        </div>
+      </div>
+      <button id="shareBtn" class="flex items-center gap-1.5 bg-orange-600/30 hover:bg-orange-600 text-orange-300 hover:text-white px-3 py-1.5 rounded-full border border-orange-500/40 text-xs font-bold transition">
+        <span>🔗</span> Share Link
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-xl mx-auto px-4 pt-5 space-y-6">
+
+    <!-- Live Headcount & Stats -->
+    <div class="grid grid-cols-3 gap-2.5">
+      <div class="bg-stone-900/90 border border-orange-500/20 rounded-2xl p-3 text-center">
+        <div class="text-2xl font-black text-orange-400" id="statHeadcount">0</div>
+        <div class="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Headcount</div>
+      </div>
+      <div class="bg-stone-900/90 border border-orange-500/20 rounded-2xl p-3 text-center">
+        <div class="text-2xl font-black text-amber-400" id="statChiliCount">0</div>
+        <div class="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Chilis/Soups</div>
+      </div>
+      <div class="bg-stone-900/90 border border-orange-500/20 rounded-2xl p-3 text-center">
+        <div class="text-2xl font-black text-purple-400" id="statCarvingYes">0</div>
+        <div class="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Carving Yes</div>
+      </div>
+    </div>
+
+    <!-- Live Potluck Dish Board (Prevents Duplicates) -->
+    <div class="bg-stone-900/90 border border-orange-500/30 rounded-2xl p-4 shadow-xl">
+      <div class="flex items-center justify-between mb-1">
+        <h2 class="text-xs font-bold text-orange-400 uppercase tracking-wider flex items-center gap-1.5">
+          <span>🍲</span> What Everyone is Bringing
+        </h2>
+        <span class="text-[11px] text-stone-400" id="dishCountLabel">0 items claimed</span>
+      </div>
+      <p class="text-[11px] text-stone-400 mb-3">Check this list first so we avoid duplicates!</p>
+      
+      <div id="dishList" class="space-y-2 max-h-56 overflow-y-auto pr-1">
+        <div class="text-xs text-stone-500 italic py-2 text-center">No dishes added yet. Be the first to claim one!</div>
+      </div>
+    </div>
+
+    <!-- Questionnaire Form -->
+    <div class="bg-stone-900/90 border border-orange-500/40 rounded-3xl p-5 chili-glow relative">
+      <div id="editBanner" class="hidden mb-4 p-2.5 bg-purple-950/80 border border-purple-500/50 rounded-xl flex items-center justify-between text-xs text-purple-200">
+        <span>✏️ Updating an existing RSVP</span>
+        <button id="cancelEditBtn" type="button" class="font-bold underline text-purple-300">Cancel</button>
+      </div>
+
+      <form id="rsvpForm" class="space-y-5">
+        <input type="hidden" id="entryId" value="" />
+
+        <!-- 1. Name -->
+        <div>
+          <label class="block text-xs font-bold text-orange-300 uppercase tracking-wider mb-1.5">
+            1. Your Name / Family Branch *
+          </label>
+          <input type="text" id="userName" required placeholder="e.g. Tim & Monica" 
+                 class="w-full bg-stone-950 border border-stone-700 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 rounded-xl px-4 py-2.5 text-sm text-white placeholder-stone-600 outline-none transition" />
+        </div>
+
+        <!-- 2. Household Attendance -->
+        <div>
+          <label class="block text-xs font-bold text-orange-300 uppercase tracking-wider mb-1.5">
+            2. Number of people attending from your household? *
+          </label>
+          <div class="flex items-center gap-3">
+            <button type="button" id="decHeadcount" class="w-11 h-11 rounded-xl bg-stone-800 text-stone-300 hover:bg-stone-700 text-xl font-bold flex items-center justify-center select-none active:bg-stone-700">-</button>
+            <input type="number" id="headcount" value="1" min="1" max="15" readonly 
+                   class="w-16 bg-stone-950 border border-stone-700 rounded-xl text-center py-2.5 text-base font-extrabold text-orange-400" />
+            <button type="button" id="incHeadcount" class="w-11 h-11 rounded-xl bg-stone-800 text-stone-300 hover:bg-stone-700 text-xl font-bold flex items-center justify-center select-none active:bg-stone-700">+</button>
+            <span class="text-xs text-stone-400">people (including you)</span>
+          </div>
+        </div>
+
+        <!-- 3. Saturday the 17th -->
+        <div>
+          <label class="block text-xs font-bold text-orange-300 uppercase tracking-wider mb-1.5">
+            3. Does Saturday the 17th work for you? *
+          </label>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="flex items-center justify-center gap-2 p-3 bg-stone-950 border border-stone-700 rounded-xl cursor-pointer hover:border-orange-500 has-[:checked]:border-orange-500 has-[:checked]:bg-orange-500/10 transition">
+              <input type="radio" name="dateVote" value="Yes" class="accent-orange-500" required checked />
+              <span class="text-xs sm:text-sm font-semibold">👍 Yes, works</span>
+            </label>
+            <label class="flex items-center justify-center gap-2 p-3 bg-stone-950 border border-stone-700 rounded-xl cursor-pointer hover:border-orange-500 has-[:checked]:border-orange-500 has-[:checked]:bg-orange-500/10 transition">
+              <input type="radio" name="dateVote" value="No" class="accent-orange-500" />
+              <span class="text-xs sm:text-sm font-semibold">👎 Can't make it</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 4. Dish Category & Specific Dish -->
+        <div>
+          <label class="block text-xs font-bold text-orange-300 uppercase tracking-wider mb-1.5">
+            4. Dish / Item You're Bringing *
+          </label>
+          <select id="dishCategory" required class="w-full bg-stone-950 border border-stone-700 focus:border-orange-500 rounded-xl px-4 py-2.5 text-sm text-white mb-2 outline-none">
+            <option value="Chilli">Chilli 🌶️</option>
+            <option value="Soup">Soup 🥣</option>
+            <option value="Appetizer/Snack">Appetizer / Snack 🥨</option>
+            <option value="Drinks">Drinks 🥤</option>
+            <option value="Garnishments">Garnishments (Cheese, sour cream, crackers) 🧀</option>
+            <option value="Disposable Bowls/Cutlery">Disposable Bowls & Cutlery 🥣🍴</option>
+          </select>
+          <input type="text" id="dishName" required placeholder="What kind? (e.g. Crockpot Chili, Cornbread, Soda)" 
+                 class="w-full bg-stone-950 border border-stone-700 focus:border-orange-500 rounded-xl px-4 py-2.5 text-sm text-white placeholder-stone-600 outline-none transition" />
+        </div>
+
+        <!-- 5. Spiciness Scale (1-5) -->
+        <div id="spiceContainer">
+          <label class="block text-xs font-bold text-orange-300 uppercase tracking-wider mb-1.5">
+            5. Spiciness on a 1 to 5 scale
+          </label>
+          <div class="flex items-center gap-2 mb-2">
+            <input type="range" id="spiceLevel" min="1" max="5" value="2" class="w-full accent-orange-500 cursor-pointer" />
+            <span id="spiceValueDisplay" class="text-base font-black text-orange-400 w-12 text-center">2 / 5</span>
+          </div>
+          <div class="text-[11px] text-stone-400 flex justify-between px-1">
+            <span>1 (Not spicy)</span>
+            <span>3 (Medium)</span>
+            <span>5 (Extremely spicy 🔥)</span>
+          </div>
+        </div>
+
+        <!-- 6. Carve Pumpkins -->
+        <div>
+          <label class="block text-xs font-bold text-orange-300 uppercase tracking-wider mb-1.5">
+            6. Should we carve pumpkins? 🎃 *
+          </label>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="flex items-center justify-center gap-2 p-3 bg-stone-950 border border-stone-700 rounded-xl cursor-pointer hover:border-orange-500 has-[:checked]:border-orange-500 has-[:checked]:bg-orange-500/10 transition">
+              <input type="radio" name="pumpkinVote" value="Yes" class="accent-orange-500" required checked />
+              <span class="text-xs sm:text-sm font-semibold">🎃 Yes!</span>
+            </label>
+            <label class="flex items-center justify-center gap-2 p-3 bg-stone-950 border border-stone-700 rounded-xl cursor-pointer hover:border-orange-500 has-[:checked]:border-orange-500 has-[:checked]:bg-orange-500/10 transition">
+              <input type="radio" name="pumpkinVote" value="No" class="accent-orange-500" />
+              <span class="text-xs sm:text-sm font-semibold">🙅 Pass</span>
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-extrabold py-3.5 rounded-xl shadow-lg shadow-orange-600/30 transition transform active:scale-[0.98]">
+          Submit My RSVP & Dish 🎃
+        </button>
+      </form>
+    </div>
+
+    <!-- Submitted Entries Roster (With Edit Button) -->
+    <div class="space-y-3">
+      <h3 class="text-xs font-bold text-stone-400 uppercase tracking-wider">All Family RSVPs (Tap Edit to Change)</h3>
+      <div id="rosterList" class="space-y-3">
+        <div class="text-stone-500 text-xs italic text-center py-4">Waiting for responses...</div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // Configured directly with your Firebase project
+    const firebaseConfig = {
+      apiKey: "AIzaSyCB2SjW7VOdFVLsqeHQ7QpGhv5Gwv3TAyY",
+      authDomain: "chilli-con-2026.firebaseapp.com",
+      projectId: "chilli-con-2026",
+      storageStorage: "chilli-con-2026.firebasestorage.app",
+      messagingSenderId: "507723200925",
+      appId: "1:507723200925:web:3cba30ebf54a18d9fdd774"
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+    const responsesRef = db.collection("chilli_con_2026");
+
+    // UI Elements
+    const form = document.getElementById("rsvpForm");
+    const entryIdInput = document.getElementById("entryId");
+    const editBanner = document.getElementById("editBanner");
+    const cancelEditBtn = document.getElementById("cancelEditBtn");
+    const headcountInput = document.getElementById("headcount");
+    const spiceLevelInput = document.getElementById("spiceLevel");
+    const spiceValueDisplay = document.getElementById("spiceValueDisplay");
+    const dishCategorySelect = document.getElementById("dishCategory");
+    const spiceContainer = document.getElementById("spiceContainer");
+
+    // Headcount Stepper
+    document.getElementById("incHeadcount").onclick = () => {
+      let v = parseInt(headcountInput.value) || 1;
+      if (v < 15) headcountInput.value = v + 1;
+    };
+    document.getElementById("decHeadcount").onclick = () => {
+      let v = parseInt(headcountInput.value) || 1;
+      if (v > 1) headcountInput.value = v - 1;
+    };
+
+    // Spice Display
+    spiceLevelInput.oninput = (e) => {
+      spiceValueDisplay.innerText = `${e.target.value} / 5`;
+    };
+
+    // Hide spice slider for non-edible/drink items
+    dishCategorySelect.onchange = (e) => {
+      if (e.target.value === "Drinks" || e.target.value === "Disposable Bowls/Cutlery") {
+        spiceContainer.classList.add("opacity-30", "pointer-events-none");
+      } else {
+        spiceContainer.classList.remove("opacity-30", "pointer-events-none");
+      }
+    };
+
+    // Cancel Edit
+    cancelEditBtn.onclick = () => {
+      form.reset();
+      entryIdInput.value = "";
+      editBanner.classList.add("hidden");
+      document.getElementById("submitBtn").innerText = "Submit My RSVP & Dish 🎃";
+    };
+
+    // Share link
+    document.getElementById("shareBtn").onclick = async () => {
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "Chilli Con 2026 RSVP",
+            text: "RSVP and pick what dish you're bringing to Chilli Con 2026!",
+            url: window.location.href
+          });
+          return;
+        } catch (err) {}
+      }
+      navigator.clipboard.writeText(window.location.href);
+      alert("Link copied! Text it to the family group chat.");
+    };
+
+    // Form Submit (Create or Update)
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById("submitBtn");
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Saving...";
+
+      const isNonSpicyCategory = dishCategorySelect.value === "Drinks" || dishCategorySelect.value === "Disposable Bowls/Cutlery";
+      const data = {
+        name: document.getElementById("userName").value.trim(),
+        headcount: parseInt(headcountInput.value) || 1,
+        dateVote: document.querySelector('input[name="dateVote"]:checked').value,
+        dishCategory: dishCategorySelect.value,
+        dishName: document.getElementById("dishName").value.trim(),
+        spiceLevel: isNonSpicyCategory ? null : parseInt(spiceLevelInput.value),
+        pumpkinVote: document.querySelector('input[name="pumpkinVote"]:checked').value,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      try {
+        const id = entryIdInput.value;
+        if (id) {
+          await responsesRef.doc(id).update(data);
+          alert("Your RSVP has been updated!");
+        } else {
+          await responsesRef.add(data);
+          alert("Got your RSVP! See you at Chilli Con 🎃");
+        }
+        form.reset();
+        entryIdInput.value = "";
+        editBanner.classList.add("hidden");
+        submitBtn.innerText = "Submit My RSVP & Dish 🎃";
+      } catch (err) {
+        console.error(err);
+        alert("Error saving: " + err.message);
+      } finally {
+        submitBtn.disabled = false;
+      }
+    };
+
+    // Real-Time Sync across all phones
+    responsesRef.orderBy("updatedAt", "desc").onSnapshot((snapshot) => {
+      const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      let totalHeadcount = 0;
+      let totalChiliSoup = 0;
+      let carvingYes = 0;
+
+      const dishListEl = document.getElementById("dishList");
+      const rosterListEl = document.getElementById("rosterList");
+
+      if (docs.length === 0) {
+        dishListEl.innerHTML = `<div class="text-xs text-stone-500 italic py-2 text-center">No dishes claimed yet.</div>`;
+        rosterListEl.innerHTML = `<div class="text-stone-500 text-xs italic text-center py-4">Waiting for responses...</div>`;
+      } else {
+        dishListEl.innerHTML = "";
+        rosterListEl.innerHTML = "";
+      }
+
+      docs.forEach(item => {
+        totalHeadcount += (item.headcount || 0);
+        if (item.dishCategory === "Chilli" || item.dishCategory === "Soup") totalChiliSoup++;
+        if (item.pumpkinVote === "Yes") carvingYes++;
+
+        // Duplicate prevention claim list
+        const dishTag = document.createElement("div");
+        dishTag.className = "flex items-center justify-between bg-stone-950/80 border border-stone-800 rounded-lg px-3 py-2 text-xs";
+        dishTag.innerHTML = `
+          <div>
+            <span class="font-bold text-orange-400">${item.name}</span>: 
+            <span class="text-white font-semibold">${item.dishName}</span>
+            <span class="text-stone-400">(${item.dishCategory})</span>
+          </div>
+          ${item.spiceLevel ? `<span class="text-amber-500 font-bold ml-2">${'🌶️'.repeat(item.spiceLevel)}</span>` : ''}
+        `;
+        dishListEl.appendChild(dishTag);
+
+        // Submission card with edit button
+        const card = document.createElement("div");
+        card.className = "bg-stone-900 border border-stone-800 p-3.5 rounded-2xl flex items-start justify-between gap-3";
+        card.innerHTML = `
+          <div class="space-y-1 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-sm text-white">${item.name}</span>
+              <span class="bg-orange-950 text-orange-400 border border-orange-800/50 px-2 py-0.5 rounded-full font-bold">${item.headcount} attending</span>
+            </div>
+            <p class="text-stone-300">🍲 <strong class="text-white">${item.dishCategory}:</strong> ${item.dishName} ${item.spiceLevel ? `(Spiciness: ${item.spiceLevel}/5)` : ''}</p>
+            <p class="text-stone-400">📅 Sat the 17th: <strong class="${item.dateVote === 'Yes' ? 'text-green-400' : 'text-red-400'}">${item.dateVote}</strong> | 🎃 Carve: <strong>${item.pumpkinVote}</strong></p>
+          </div>
+          <button data-id="${item.id}" class="edit-btn text-xs bg-stone-800 hover:bg-stone-700 text-stone-300 px-3 py-1.5 rounded-lg border border-stone-700 active:scale-95 transition">
+            Edit
+          </button>
+        `;
+        rosterListEl.appendChild(card);
+      });
+
+      // Update counters
+      document.getElementById("statHeadcount").innerText = totalHeadcount;
+      document.getElementById("statChiliCount").innerText = totalChiliSoup;
+      document.getElementById("statCarvingYes").innerText = carvingYes;
+      document.getElementById("dishCountLabel").innerText = `${docs.length} claimed`;
+
+      // Wire Edit button clicks
+      document.querySelectorAll(".edit-btn").forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.getAttribute("data-id");
+          const item = docs.find(d => d.id === id);
+          if (!item) return;
+
+          entryIdInput.value = item.id;
+          document.getElementById("userName").value = item.name;
+          headcountInput.value = item.headcount;
+          dishCategorySelect.value = item.dishCategory;
+          document.getElementById("dishName").value = item.dishName;
+          if (item.spiceLevel) {
+            spiceLevelInput.value = item.spiceLevel;
+            spiceValueDisplay.innerText = `${item.spiceLevel} / 5`;
+          }
+          const dateRadio = document.querySelector(`input[name="dateVote"][value="${item.dateVote}"]`);
+          if (dateRadio) dateRadio.checked = true;
+          const pumpkinRadio = document.querySelector(`input[name="pumpkinVote"][value="${item.pumpkinVote}"]`);
+          if (pumpkinRadio) pumpkinRadio.checked = true;
+
+          editBanner.classList.remove("hidden");
+          document.getElementById("submitBtn").innerText = "Update RSVP ✏️";
+          form.scrollIntoView({ behavior: "smooth" });
+        };
+      });
+    });
+  </script>
+</body>
+</html>
